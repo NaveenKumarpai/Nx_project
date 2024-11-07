@@ -1,0 +1,39 @@
+.background {
+    background: #0a254d;
+    height: 700px;
+    width: 1332px;
+  }
+  
+  .header-container {
+    display: flex;
+    align-items: center;
+   
+  }
+  
+  .logo {
+    height: 120px;
+    width: 120px;
+    margin-left: 80px;
+  }
+  
+  .header {
+    display: flex;
+    align-items: center;
+     /* Evenly space items */
+    width: 100%; /* Ensure header items take the full width */
+    list-style: none;
+    font-size: 22px;
+    margin: 35px 20px 0 50px;
+    padding: 10px; /* Remove default padding */
+  }
+  
+  .header li {
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer; /* Indicate clickable items */
+  }
+  
+  .header li:hover {
+    color: #ffcc00; /* Change this color to whatever you prefer for hover effect */
+  }
+  
