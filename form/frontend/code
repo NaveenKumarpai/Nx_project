@@ -1,0 +1,190 @@
+import React, { useState, useEffect } from 'react';
+import { Form, Input, Button, DatePicker, Select, Radio, Card, Col, Table, message } from 'antd';
+import { Link } from 'react-router-dom';
+
+const { Option } = Select;
+
+const StudentRegistrationForm = () => {
+  const [form] = Form.useForm();
+  const [data, setData] = useState<any[]>([]);
+
+  const onFinish = (values: any) => {
+    const formattedData = {
+      ...values,
+      dateOfBirth: values.dateOfBirth.format('YYYY-MM-DD'),
+      id: data.length + 1,
+    };
+
+    setData([...data, formattedData]);
+    form.resetFields();
+  };
+
+  const handleUpload = async () => {
+    try {
+      const uploadPromises = data.map(async (entry) => {
+        const response = await fetch('http://localhost:5000/User/addUser', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(entry),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to upload entry with id ${entry.id}: ${response.statusText}`);
+        }
+      });
+
+      await Promise.all(uploadPromises);
+
+      message.success('Data uploaded successfully');
+      setData([]);
+    } catch (error) {
+      message.error('Failed to upload data');
+      console.error('Upload error:', error);
+    }
+  };
+
+  useEffect(() => {
+    console.log('Updated registration data:', data);
+  }, [data]);
+
+  return (
+    <div className="page-container">
+      <Card
+        title={<span style={{ color: 'white' }}>Student Registration Form</span>}
+        extra={
+          <Link to="/view">
+            <span style={{ color: 'white' }}>
+              <Button type="primary">View</Button>
+            </span>
+          </Link>
+        }
+        headStyle={{ backgroundColor: '#69c0ff', border: 0 }}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={onFinish}
+          initialValues={{
+            gender: null,
+          }}
+        >
+            <Col span={8}>
+              <Form.Item
+                name="firstName"
+                label="First Name"
+                rules={[{ required: true, message: 'Please input your first name!' }]}
+              >
+                <Input placeholder="Enter your first name" />
+              </Form.Item>
+            </Col>
+
+            <Col span={8}>
+              <Form.Item
+                name="lastName"
+                label="Last Name"
+                rules={[{ required: true, message: 'Please input your last name!' }]}
+              >
+                <Input placeholder="Enter your last name" />
+              </Form.Item>
+            </Col>
+
+            <Col span={8}>
+              <Form.Item
+                name="dateOfBirth"
+                label="Date of Birth"
+                rules={[{ required: true, message: 'Please select your date of birth!' }]}
+              >
+                <DatePicker style={{ width: '100%' }} format="YYYY-MM-DD" />
+              </Form.Item>
+            </Col>
+
+            <Col span={8}>
+              <Form.Item
+                name="gender"
+                label="Gender"
+                rules={[{ required: true, message: 'Please select your gender!' }]}
+              >
+                <Radio.Group>
+                  <Radio value="male">Male</Radio>
+                  <Radio value="female">Female</Radio>
+                  <Radio value="other">Other</Radio>
+                </Radio.Group>
+              </Form.Item>
+            </Col>
+
+            <Col span={8}>
+              <Form.Item
+                name="email"
+                label="Email"
+                rules={[
+                  { type: 'email', message: 'The input is not valid E-mail!' },
+                  { required: true, message: 'Please input your E-mail!' },
+                ]}
+              >
+                <Input placeholder="Enter your email" />
+              </Form.Item>
+            </Col>
+
+            <Col span={8}>
+              <Form.Item
+                name="phoneNumber"
+                label="Phone Number"
+                rules={[{ required: true, message: 'Please input your phone number!' }]}
+              >
+                <Input placeholder="Enter your phone number" />
+              </Form.Item>
+            </Col>
+
+            <Col span={8}>
+              <Form.Item
+                name="course"
+                label="Course"
+                rules={[{ required: true, message: 'Please select your course!' }]}
+              >
+                <Select placeholder="Select a course">
+                  <Option value="science">Science</Option>
+                  <Option value="commerce">Commerce</Option>
+                  <Option value="arts">Arts</Option>
+                  <Option value="maths">Maths</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+
+            <Col span={8}>
+              <Form.Item>
+                <Button type="primary" htmlType="submit">
+                  Register
+                </Button>
+              </Form.Item>
+            </Col>
+        </Form>
+      </Card>
+
+      <Card>
+
+      <Button type="primary" onClick={handleUpload} style={{ marginTop: '2px',marginLeft:'1200px' }}>
+          Upload
+        </Button>
+        <Table
+          className="custom-table-wrapper"
+          dataSource={data}
+          rowKey="id"
+          pagination={{ pageSize: 5 }}
+        >
+          <Table.Column title="First Name" dataIndex="firstName" key="firstName" />
+          <Table.Column title="Last Name" dataIndex="lastName" key="lastName" />
+          <Table.Column title="Date of Birth" dataIndex="dateOfBirth" key="dateOfBirth" />
+          <Table.Column title="Gender" dataIndex="gender" key="gender" />
+          <Table.Column title="Email" dataIndex="email" key="email" />
+          <Table.Column title="Phone Number" dataIndex="phoneNumber" key="phoneNumber" />
+          <Table.Column title="Course" dataIndex="course" key="course" />
+        </Table>
+        
+      </Card>
+    </div>
+  );
+};
+
+export default StudentRegistrationForm;
